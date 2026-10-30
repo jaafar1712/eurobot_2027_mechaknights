@@ -49,6 +49,11 @@ def generate_launch_description():
         description='Open the keyboard teleop window (xterm)'
     )
 
+    marker_localization = DeclareLaunchArgument(
+        'marker_localization', default_value='true', choices=['true', 'false'],
+        description='Correct the robot position with the fixed table markers (IDs 20-23)'
+    )
+
     team_color = DeclareLaunchArgument(
         'team_color', default_value='yellow', choices=['yellow', 'blue'],
         description='Team colour: sets the start area and the strategy side'
@@ -56,7 +61,8 @@ def generate_launch_description():
 
     robot_spawn = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(os.path.join(pkg_share, 'launch', 'robot_spawn.launch.py')),
-        launch_arguments={'team_color': LaunchConfiguration('team_color')}.items()
+        launch_arguments={'team_color': LaunchConfiguration('team_color'),
+                          'marker_localization': LaunchConfiguration('marker_localization')}.items()
     )
 
     navigation_bridges = IncludeLaunchDescription(
@@ -132,6 +138,7 @@ def generate_launch_description():
     return LaunchDescription([
         # Team colour (ros2 launch ... team_color:=blue)
         team_color,
+        marker_localization,
         use_teleop,
 
         # Environment

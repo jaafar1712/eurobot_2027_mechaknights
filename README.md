@@ -101,6 +101,7 @@ SLAM, path planning and the mission logic.
 - `task_manager.py`: the mission state machine, with the match timer and the return home before time runs out.
 - `field.py`: the table layout from the rules, with yellow/blue mirroring helpers.
 - `field_markers.py`: draws the table (outline, throne rooms, stables, quarries) in RViz.
+- `table_localizer.py`: corrects the robot position with the fixed table markers (see [Localisation with the table markers](#localisation-with-the-table-markers)).
 - `scan_frame_fixer.py`: fixes the lidar frame id so SLAM accepts the scans.
 - `teleop_keyboard.py`: drive the robot from the keyboard.
 - `launch/bridges.launch.py`: the ROS ↔ Gazebo topic bridges.
@@ -186,11 +187,18 @@ ros2 launch mechaknights_2027 arena.launch.py team_color:=blue
 ### Coordinate frames
 
 ```text
-table ──(start pose)──> map ──(SLAM)──> odom ──(wheel odometry)──> base_link
+table ──(table_localizer)──> map ──(SLAM)──> odom ──(wheel odometry)──> base_footprint ──> base_link
 ```
 
 - **`table`** is the rule-book frame: origin at the yellow front-left corner, X towards blue, Y away from the audience. **Use it for anything on the table**: goals, quarries, zones. RViz uses it as its fixed frame, so the view looks like the real table.
 - `map` is SLAM's frame. Its origin is wherever the robot started, so it differs for yellow and blue. Avoid hard-coding positions in it.
+- `base_footprint` is the robot's centre on the table surface (z = 0); `base_link` is the body, 40 mm above it.
+
+### Localisation with the table markers
+
+SLAM drifts as the robot drives (several cm and degrees after a few moves). The playmat has 4 fixed ArUco markers, IDs 20–23, at (0.6, 1.4), (2.4, 1.4), (0.6, 0.6) and (2.4, 0.6). Whenever the camera sees one closer than 1.3 m, `table_localizer` measures the robot's true position from it, to about 5 mm and 0.5°, and gradually corrects `table → map`. Nav2 works in `map`, so it never sees a jump.
+
+The strategy should therefore **look at a table marker now and then**, for example before an accurate pickup or a build. `marker_localization:=false` switches the correction off, for comparison. Each accepted fix is logged and published on `/localization/marker_pose`.
 - Nav2 accepts goals in `table` directly: `header.frame_id: table`.
 
 ### Table layout in code

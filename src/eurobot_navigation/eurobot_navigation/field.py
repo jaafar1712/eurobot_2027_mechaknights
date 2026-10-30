@@ -43,6 +43,24 @@ QUARRIES = (
 )
 STONES_PER_QUARRY = 3
 
+# Fixed ArUco markers printed on the playmat (DICT_4X4_50), used to correct the
+# robot's position. id: (x, y) of the marker centre. Each is a 100 mm square
+# lying flat, with its top edge facing +Y (away from the audience).
+TABLE_MARKERS = {
+    20: (0.6, 1.4),
+    21: (2.4, 1.4),
+    22: (0.6, 0.6),
+    23: (2.4, 0.6),
+}
+TABLE_MARKER_SIZE = 0.10
+
+
+def table_marker_corners(marker_id):
+    """Corners of a fixed marker in the table frame, in ArUco order (TL, TR, BR, BL)."""
+    x, y = TABLE_MARKERS[marker_id]
+    h = TABLE_MARKER_SIZE / 2
+    return ((x - h, y + h), (x + h, y + h), (x + h, y - h), (x - h, y - h))
+
 
 def check_team(team):
     if team not in TEAMS:

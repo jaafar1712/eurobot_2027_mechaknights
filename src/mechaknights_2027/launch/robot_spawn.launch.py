@@ -3,18 +3,19 @@ Spawns the robot in its team's throne room and sets up the `table` frame.
 
 Included by arena.launch.py and full_system.launch.py, which pass team_color.
 
-    table ──(start pose)──> map ──(SLAM)──> odom ──(wheel odometry)──> base_link
+    table ──(table_localizer)──> map ──(SLAM)──> odom ──(wheels)──> base_footprint
 
 `table` is the rule-book frame (origin at the yellow front-left corner). SLAM
-starts its `map` frame where the robot starts, so publishing table -> map at the
-start pose lets every node use rule-book coordinates directly.
+starts its `map` frame where the robot starts, so table -> map starts at the
+start pose; table_localizer then corrects it whenever the camera sees one of the
+playmat's fixed markers (marker_localization:=false keeps it fixed).
 """
 import os
 
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, LogInfo, OpaqueFunction
-from launch.conditions import IfCondition
+from launch.conditions import IfCondition, UnlessCondition
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
 
@@ -39,12 +40,22 @@ def spawn(context):
                        '-x', str(x), '-y', str(y), '-z', '0.015', '-Y', str(yaw)],
             output='screen',
         ),
+        # table -> map: corrected with the playmat's fixed ArUco markers, or fixed at the start pose
+        Node(
+            package='eurobot_navigation',
+            executable='table_localizer',
+            name='table_localizer',
+            parameters=[{'use_sim_time': True, 'start_x': x, 'start_y': y, 'start_yaw': yaw}],
+            output='screen',
+            condition=IfCondition(LaunchConfiguration('marker_localization')),
+        ),
         Node(
             package='tf2_ros',
             executable='static_transform_publisher',
             name='table_to_map',
             arguments=pose + ['--frame-id', 'table', '--child-frame-id', 'map'],
             parameters=[{'use_sim_time': True}],
+            condition=UnlessCondition(LaunchConfiguration('marker_localization')),
         ),
     ]
 
@@ -54,6 +65,8 @@ def generate_launch_description():
         DeclareLaunchArgument('team_color', default_value='yellow',
                               choices=list(field.TEAMS),
                               description='Team colour: sets the start area and the strategy side'),
+        DeclareLaunchArgument('marker_localization', default_value='true',
+                              description='Correct the robot position with the fixed table markers (IDs 20-23)'),
         DeclareLaunchArgument('publish_map_to_odom', default_value='false',
                               description='Publish an identity map -> odom when SLAM is not running'),
         OpaqueFunction(function=spawn),

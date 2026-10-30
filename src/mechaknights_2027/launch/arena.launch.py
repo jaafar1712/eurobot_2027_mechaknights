@@ -34,6 +34,11 @@ def generate_launch_description():
         output='screen'
     )
 
+    marker_localization = DeclareLaunchArgument(
+        'marker_localization', default_value='true', choices=['true', 'false'],
+        description='Correct the robot position with the fixed table markers (IDs 20-23)'
+    )
+
     team_color = DeclareLaunchArgument(
         'team_color', default_value='yellow', choices=['yellow', 'blue'],
         description='Team colour: sets the start area and the strategy side'
@@ -41,7 +46,8 @@ def generate_launch_description():
 
     robot_spawn = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(os.path.join(pkg_share, 'launch', 'robot_spawn.launch.py')),
-        launch_arguments={'team_color': LaunchConfiguration('team_color'), 'publish_map_to_odom': 'true'}.items()
+        launch_arguments={'team_color': LaunchConfiguration('team_color'), 'publish_map_to_odom': 'true',
+                          'marker_localization': LaunchConfiguration('marker_localization')}.items()
     )
 
     gazebo = ExecuteProcess(
@@ -103,6 +109,7 @@ def generate_launch_description():
 
     return LaunchDescription([
         team_color,
+        marker_localization,
         set_resource_path,
         set_gripper_yaml,
         set_libgl_sw,
