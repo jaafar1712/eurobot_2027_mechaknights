@@ -52,6 +52,12 @@ aruco_crate_perception:
     
     # Camera frame (where camera is mounted)
     camera_frame: "camera_link"
+
+    # Camera mount relative to base_link. Must match camera_link in
+    # mechaknights_2027/models/simple_robot/model.sdf and simple_robot.urdf.
+    camera_x_offset: 0.10   # m forward
+    camera_z_offset: 0.29   # m up (~0.33 m above the table)
+    camera_pitch: 0.436     # rad tilted down (25 deg)
     
     # Robot base frame
     base_frame: "base_link"

@@ -40,12 +40,8 @@
       <pose>0 0 0 0 0 0</pose>
     </include>
 
-    <!-- Robot in the yellow start zone, facing the centre of the table -->
-    <include>
-      <uri>model://simple_robot</uri>
-      <name>simple_robot</name>
-      <pose>0.25 1.0 0.002 0 0 0</pose>
-    </include>
+    <!-- The robot is spawned by launch/robot_spawn.launch.py in the throne room
+         of the team given by the team_color launch argument. -->
 
     <!-- Stones: 10 quarries of 3 stacked stones -->
     <include>

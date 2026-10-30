@@ -1,8 +1,10 @@
 from launch import LaunchDescription
 from launch.actions import (
-    ExecuteProcess, IncludeLaunchDescription,
+    DeclareLaunchArgument, ExecuteProcess, IncludeLaunchDescription,
     SetEnvironmentVariable, TimerAction
 )
+from launch.conditions import IfCondition
+from launch.substitutions import LaunchConfiguration
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.actions import Node
 from ament_index_python.packages import get_package_share_directory
@@ -41,6 +43,21 @@ def generate_launch_description():
     gazebo = ExecuteProcess(
         cmd=['ign', 'gazebo', '-r', world_path],
         output='screen'
+    )
+
+    use_teleop = DeclareLaunchArgument(
+        'teleop', default_value='true', choices=['true', 'false'],
+        description='Open the keyboard teleop window (xterm)'
+    )
+
+    team_color = DeclareLaunchArgument(
+        'team_color', default_value='yellow', choices=['yellow', 'blue'],
+        description='Team colour: sets the start area and the strategy side'
+    )
+
+    robot_spawn = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(os.path.join(pkg_share, 'launch', 'robot_spawn.launch.py')),
+        launch_arguments={'team_color': LaunchConfiguration('team_color')}.items()
     )
 
     navigation_bridges = IncludeLaunchDescription(
@@ -91,7 +108,8 @@ def generate_launch_description():
         executable='teleop_keyboard',
         name='teleop_keyboard',
         prefix='xterm -e',
-        output='screen'
+        output='screen',
+        condition=IfCondition(LaunchConfiguration('teleop'))
     )
 
     # ArUco crate perception (t=5s, after camera bridge is up)
@@ -111,6 +129,10 @@ def generate_launch_description():
     )
 
     return LaunchDescription([
+        # Team colour (ros2 launch ... team_color:=blue)
+        team_color,
+        use_teleop,
+
         # Environment
         set_resource_path,
         set_libgl_sw,
@@ -120,6 +142,7 @@ def generate_launch_description():
         # t=0: Simulation
         robot_state_publisher,
         gazebo,
+        robot_spawn,
         navigation_bridges,
         rviz,
 

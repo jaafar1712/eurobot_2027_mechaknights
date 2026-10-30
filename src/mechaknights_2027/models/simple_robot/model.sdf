@@ -420,7 +420,10 @@
 
     <!-- ====================== CAMERA LINK ====================== -->
     <link name="camera_link">
-      <pose relative_to="base_link">0.10 0 0.20 0 0.7 0</pose>
+      <!-- ~0.33 m above the table (above a 3-stone stack), tilted 25 deg down.
+           Keep in sync with simple_robot.urdf and the camera_* parameters of
+           eurobot_perception/aruco_crate_perception. -->
+      <pose relative_to="base_link">0.10 0 0.29 0 0.436 0</pose>
       <inertial>
         <mass>0.05</mass>
         <inertia>

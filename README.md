@@ -84,6 +84,7 @@ Simulation and launch files: the robot model, the Gazebo arena and RViz config.
 
 - `launch/full_system.launch.py`: launches Gazebo, bridges, SLAM, Nav2, perception, RViz and teleop.
 - `launch/arena.launch.py`: launches only Gazebo, the robot and RViz.
+- `launch/robot_spawn.launch.py`: spawns the robot for `team_color` and publishes the `table` frame. Both launch files above include it.
 - `worlds/arena_world.sdf`: the 2027 arena (see [Simulation world](#simulation-world)).
 - `models/simple_robot/`: the simulated robot (SDF for Gazebo, URDF for `robot_state_publisher`).
 - `models/eurobot_table/`, `models/eurobot_stone/`: the official table and stone.
@@ -95,6 +96,8 @@ SLAM, path planning and the mission logic.
 - `launch/online_async_launch.py` and `config/mapper_params_online_async.yaml`: SLAM with `slam_toolbox`.
 - `config/nav2_params.yaml`: Nav2, using a DWA local planner.
 - `task_manager.py`: the mission state machine, with the match timer and the return home before time runs out.
+- `field.py`: the table layout from the rules, with yellow/blue mirroring helpers.
+- `field_markers.py`: draws the table (outline, throne rooms, stables, quarries) in RViz.
 - `scan_frame_fixer.py`: fixes the lidar frame id so SLAM accepts the scans.
 - `teleop_keyboard.py`: drive the robot from the keyboard.
 - `launch/bridges.launch.py`: the ROS ↔ Gazebo topic bridges.
@@ -120,7 +123,7 @@ Custom ROS 2 messages: `CrateDetection(Array)` and `PantryDetection(Array)`.
 - **Frame**: the origin is the front-left (yellow) corner of the table. X runs along the 3 m side towards blue, Y points away from the audience, and the table surface is at z = 0.
 - **Table**: 3000 × 2000 mm official playmat, with 70 mm high borders.
 - **Stones**: 30 stones in 10 quarries of 3 stacked stones. Each stone is 320 × 110 × 110 mm, 90 g, friction μ = 0.5, with ArUco ID 13 on its 4 long faces. A printable label for the real stones is in [assets/aruco/](assets/aruco/).
-- **Robot**: spawns in the yellow throne room at (0.25, 1.0), facing blue.
+- **Robot**: not part of the world file. The launch files spawn it in the throne room of the chosen team: yellow (0.25, 1.0) facing +X, or blue (2.75, 1.0) facing −X.
 
 > **Lidar height:** the table borders are only 70 mm tall, so the simulated lidar is mounted about 55 mm above the table to see them. At that height some beams hit the robot's own wheels. `scan_frame_fixer` drops every reading closer than 0.20 m (`self_filter_range` parameter) before publishing `/scan_fixed`, which SLAM and Nav2 use. If the real robot's lidar ends up at a different height, update `lidar_link` in both `model.sdf` and `simple_robot.urdf`.
 
@@ -164,11 +167,41 @@ To rebuild a single package: `colcon build --packages-select eurobot_navigation`
 
 ```bash
 # Everything: Gazebo, SLAM, Nav2, perception, RViz, teleop
-ros2 launch mechaknights_2027 full_system.launch.py
+ros2 launch mechaknights_2027 full_system.launch.py team_color:=yellow
 
 # Only the arena and the robot
-ros2 launch mechaknights_2027 arena.launch.py
+ros2 launch mechaknights_2027 arena.launch.py team_color:=blue
 ```
+
+**Choose the team colour before starting.** At a match the colour is given at the last moment, and the robot has to work for both. `team_color` (`yellow` by default, or `blue`) does three things:
+
+- spawns the robot in that team's throne room, facing the opponent,
+- places the `table` frame so positions match the rule book,
+- passes the colour to the nodes that need it, such as perception.
+
+### Coordinate frames
+
+```text
+table ──(start pose)──> map ──(SLAM)──> odom ──(wheel odometry)──> base_link
+```
+
+- **`table`** is the rule-book frame: origin at the yellow front-left corner, X towards blue, Y away from the audience. **Use it for anything on the table**: goals, quarries, zones. RViz uses it as its fixed frame, so the view looks like the real table.
+- `map` is SLAM's frame. Its origin is wherever the robot started, so it differs for yellow and blue. Avoid hard-coding positions in it.
+- Nav2 accepts goals in `table` directly: `header.frame_id: table`.
+
+### Table layout in code
+
+Every position from the rules (throne rooms, stables, quarries, stone size and its ArUco ID) is in [`eurobot_navigation/field.py`](src/eurobot_navigation/eurobot_navigation/field.py). Team-owned zones are written once for yellow and mirrored for blue (the table is symmetric about x = 1.5 m):
+
+```python
+from eurobot_navigation import field
+
+x, y, yaw = field.start_pose(team)                  # our throne room
+home = field.own(team, field.YELLOW_THRONE_ROOM)    # our zone, either colour
+for qx, qy, qyaw in field.QUARRIES: ...             # stone quarries at the start
+```
+
+Don't type table coordinates anywhere else. Add them to `field.py`, and `field_markers` will also draw them in RViz.
 
 `full_system.launch.py` starts things in this order:
 
@@ -205,7 +238,7 @@ The launch files force software rendering (`LIBGL_ALWAYS_SOFTWARE=1`) because Ga
 
 | Parameter | Default | Description |
 |---|---|---|
-| `team_color` | `yellow` | Team side (`yellow` or `blue`) |
+| `team_color` | `yellow` | Team side (`yellow` or `blue`). Set it with the launch argument, not here |
 | `match_duration` | `100.0` | Match length in seconds |
 | `nest_return_time` | `10.0` | Seconds before the end when the robot heads back to its start area |
 | `alignment_distance` | `0.50` | Approach distance before fine alignment (m) |

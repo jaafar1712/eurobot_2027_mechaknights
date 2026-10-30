@@ -1,5 +1,6 @@
 from launch import LaunchDescription
-from launch.actions import ExecuteProcess, IncludeLaunchDescription, SetEnvironmentVariable
+from launch.actions import DeclareLaunchArgument, ExecuteProcess, IncludeLaunchDescription, SetEnvironmentVariable
+from launch.substitutions import LaunchConfiguration
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.actions import Node
 from ament_index_python.packages import get_package_share_directory
@@ -31,6 +32,16 @@ def generate_launch_description():
             {'use_sim_time': True}
         ],
         output='screen'
+    )
+
+    team_color = DeclareLaunchArgument(
+        'team_color', default_value='yellow', choices=['yellow', 'blue'],
+        description='Team colour: sets the start area and the strategy side'
+    )
+
+    robot_spawn = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(os.path.join(pkg_share, 'launch', 'robot_spawn.launch.py')),
+        launch_arguments={'team_color': LaunchConfiguration('team_color'), 'publish_map_to_odom': 'true'}.items()
     )
 
     gazebo = ExecuteProcess(
@@ -91,6 +102,7 @@ def generate_launch_description():
     set_mesa_override = SetEnvironmentVariable('MESA_LOADER_DRIVER_OVERRIDE', 'llvmpipe')
 
     return LaunchDescription([
+        team_color,
         set_resource_path,
         set_gripper_yaml,
         set_libgl_sw,
@@ -98,6 +110,7 @@ def generate_launch_description():
         set_mesa_override,
         robot_state_publisher,
         gazebo,
+        robot_spawn,
         joint_state_broadcaster,
         gripper_controller,
         navigation_bridges,

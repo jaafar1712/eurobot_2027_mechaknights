@@ -31,6 +31,7 @@ setup(
             'task_manager = eurobot_navigation.task_manager:main',
             'teleop_keyboard = eurobot_navigation.teleop_keyboard:main',
             'scan_frame_fixer = eurobot_navigation.scan_frame_fixer:main',
+            'field_markers = eurobot_navigation.field_markers:main',
             'gripper_controller = eurobot_navigation.gripper_controller:main',
             'simple_crate_navigator = eurobot_navigation.simple_crate_navigator:main',
             'MissionController = eurobot_navigation.MissionController:main',
