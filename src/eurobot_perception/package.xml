@@ -12,6 +12,8 @@
   <depend>sensor_msgs</depend>
   <depend>cv_bridge</depend>
   <depend>eurobot_interfaces</depend>
+  <depend>tf2_ros</depend>
+  <depend>visualization_msgs</depend>
 
 
   <test_depend>ament_copyright</test_depend>

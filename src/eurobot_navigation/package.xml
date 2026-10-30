@@ -13,6 +13,10 @@
 <depend>nav_msgs</depend>
 <depend>nav2_msgs</depend>
 <depend>eurobot_interfaces</depend>
+<depend>visualization_msgs</depend>
+<depend>sensor_msgs</depend>
+<depend>cv_bridge</depend>
+<depend>tf2_ros</depend>
 
   <test_depend>ament_copyright</test_depend>
   <test_depend>ament_flake8</test_depend>

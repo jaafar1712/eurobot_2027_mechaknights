@@ -24,6 +24,8 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/CrateDetectionArray.msg"
   "msg/PantryDetection.msg"
   "msg/PantryDetectionArray.msg"
+  "msg/StoneDetection.msg"
+  "msg/StoneDetectionArray.msg"
   DEPENDENCIES std_msgs geometry_msgs
 )
 

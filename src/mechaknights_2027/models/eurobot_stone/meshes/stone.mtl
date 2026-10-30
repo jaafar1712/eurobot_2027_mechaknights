@@ -1,0 +1,11 @@
+newmtl face
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+map_Kd stone_face.png
+
+newmtl end
+Ka 1 1 1
+Kd 1 1 1
+Ks 0 0 0
+map_Kd stone_end.png

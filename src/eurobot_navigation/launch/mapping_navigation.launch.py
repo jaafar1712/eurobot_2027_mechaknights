@@ -8,7 +8,7 @@ import os
 def generate_launch_description():
 
     eurobot_nav_share = get_package_share_directory("eurobot_navigation")
-    mam_share = get_package_share_directory("mam_eurobot_2026")
+    mam_share = get_package_share_directory("mechaknights_2027")
 
     robot_description_path = os.path.join(mam_share, "models", "simple_robot", "simple_robot.urdf")
     nav2_params_path = os.path.join(eurobot_nav_share, "config", "nav2_params.yaml")

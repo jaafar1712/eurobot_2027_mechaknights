@@ -191,9 +191,9 @@ class ArucoCratePerception(Node):
         self.declare_parameter('min_marker_perimeter', 30)  # pixels
         
         # Coordinate transform
-        self.declare_parameter('camera_pitch', 0.7)  # radians
+        self.declare_parameter('camera_pitch', 0.436)  # radians (25 deg down)
         self.declare_parameter('camera_x_offset', 0.10)  # meters
-        self.declare_parameter('camera_z_offset', 0.20)  # meters
+        self.declare_parameter('camera_z_offset', 0.29)  # meters
         self.declare_parameter('base_frame', 'base_link')
         
         # Filtering
