@@ -1,0 +1,13 @@
+# Eurobot 2027 playmat 3000 x 2000 mm, origin at the front-left (yellow) corner, z up
+mtllib playmat.mtl
+v 0 0 0
+v 3.0 0 0
+v 3.0 2.0 0
+v 0 2.0 0
+vt 0 0
+vt 1 0
+vt 1 1
+vt 0 1
+vn 0 0 1
+usemtl playmat
+f 1/1/1 2/2/1 3/3/1 4/4/1

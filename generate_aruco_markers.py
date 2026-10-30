@@ -20,7 +20,7 @@ markers = [
 ]
 
 base = os.path.join(os.path.dirname(__file__),
-                    'src', 'mam_eurobot_2026', 'models')
+                    'src', 'mechaknights_2027', 'models')
 
 for marker_id, rel_path in markers:
     img = aruco.generateImageMarker(aruco_dict, marker_id, OUTPUT_SIZE)

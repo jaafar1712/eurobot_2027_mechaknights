@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="Robot">
+  
+  <!-- Include the main URDF -->
+  <xacro:include filename="$(find mechaknights_2027)/urdf/Robot.urdf" />
+  
+  <!-- Include Gazebo tags -->
+  <xacro:include filename="$(find mechaknights_2027)/urdf/Robot.gazebo" />
+
+</robot>

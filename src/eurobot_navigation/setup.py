@@ -28,10 +28,6 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            'slam_node = eurobot_navigation.slam_node:main',
-            'localization_node = eurobot_navigation.localization_node:main',
-            'nav2_global_planner = eurobot_navigation.nav2_global_planner:main',
-            'nav2_local_planner = eurobot_navigation.nav2_local_planner:main',
             'task_manager = eurobot_navigation.task_manager:main',
             'teleop_keyboard = eurobot_navigation.teleop_keyboard:main',
             'scan_frame_fixer = eurobot_navigation.scan_frame_fixer:main',

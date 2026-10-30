@@ -1,0 +1,6 @@
+# The code runs on Linux (ROS 2 in WSL/Ubuntu): keep LF line endings even on Windows checkouts
+* text=auto eol=lf
+*.STL binary
+*.stl binary
+*.png binary
+*.jpg binary

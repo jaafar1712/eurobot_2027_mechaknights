@@ -1,0 +1,212 @@
+<sdf version='1.9'>
+  <world name='eurobot_2027_arena'>
+    <gravity>0 0 -9.81</gravity>
+    <physics type='ode'>
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1</real_time_factor>
+      <real_time_update_rate>1000</real_time_update_rate>
+    </physics>
+
+    <plugin
+    filename="libignition-gazebo-physics-system.so"
+    name="ignition::gazebo::systems::Physics">
+    </plugin>
+    <plugin
+    filename="libignition-gazebo-user-commands-system.so"
+    name="ignition::gazebo::systems::UserCommands">
+    </plugin>
+    <plugin
+    filename="libignition-gazebo-scene-broadcaster-system.so"
+    name="ignition::gazebo::systems::SceneBroadcaster">
+    </plugin>
+
+    <magnetic_field>6e-06 2.3e-05 -4.2e-05</magnetic_field>
+    <atmosphere type='adiabatic'/>
+
+    <scene>
+      <ambient>0.6 0.6 0.6 1</ambient>
+      <background>0.8 0.85 0.9 1</background>
+      <shadows>true</shadows>
+    </scene>
+
+    <!--
+      Eurobot 2027 table (3000 x 2000 mm, 70 mm borders).
+      World frame: origin at the front-left (yellow) corner, X along the
+      3000 mm side towards blue, Y away from the audience, table surface at z = 0.
+    -->
+    <include>
+      <uri>model://eurobot_table</uri>
+      <name>table</name>
+      <pose>0 0 0 0 0 0</pose>
+    </include>
+
+    <!-- Robot in the yellow start zone, facing the centre of the table -->
+    <include>
+      <uri>model://simple_robot</uri>
+      <name>simple_robot</name>
+      <pose>0.25 1.0 0.002 0 0 0</pose>
+    </include>
+
+    <!-- Stones: 10 quarries of 3 stacked stones -->
+    <include>
+      <uri>model://eurobot_stone</uri>
+      <name>stone_q1_1</name>
+      <pose>0.75 0.055 0.0552 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://eurobot_stone</uri>
+      <name>stone_q1_2</name>
+      <pose>0.75 0.055 0.1657 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://eurobot_stone</uri>
+      <name>stone_q1_3</name>
+      <pose>0.75 0.055 0.2762 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://eurobot_stone</uri>
+      <name>stone_q2_1</name>
+      <pose>1.25 0.055 0.0552 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://eurobot_stone</uri>
+      <name>stone_q2_2</name>
+      <pose>1.25 0.055 0.1657 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://eurobot_stone</uri>
+      <name>stone_q2_3</name>
+      <pose>1.25 0.055 0.2762 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://eurobot_stone</uri>
+      <name>stone_q3_1</name>
+      <pose>1.75 0.055 0.0552 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://eurobot_stone</uri>
+      <name>stone_q3_2</name>
+      <pose>1.75 0.055 0.1657 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://eurobot_stone</uri>
+      <name>stone_q3_3</name>
+      <pose>1.75 0.055 0.2762 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://eurobot_stone</uri>
+      <name>stone_q4_1</name>
+      <pose>2.25 0.055 0.0552 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://eurobot_stone</uri>
+      <name>stone_q4_2</name>
+      <pose>2.25 0.055 0.1657 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://eurobot_stone</uri>
+      <name>stone_q4_3</name>
+      <pose>2.25 0.055 0.2762 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://eurobot_stone</uri>
+      <name>stone_q5_1</name>
+      <pose>0.75 1.945 0.0552 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://eurobot_stone</uri>
+      <name>stone_q5_2</name>
+      <pose>0.75 1.945 0.1657 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://eurobot_stone</uri>
+      <name>stone_q5_3</name>
+      <pose>0.75 1.945 0.2762 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://eurobot_stone</uri>
+      <name>stone_q6_1</name>
+      <pose>1.25 1.945 0.0552 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://eurobot_stone</uri>
+      <name>stone_q6_2</name>
+      <pose>1.25 1.945 0.1657 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://eurobot_stone</uri>
+      <name>stone_q6_3</name>
+      <pose>1.25 1.945 0.2762 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://eurobot_stone</uri>
+      <name>stone_q7_1</name>
+      <pose>1.75 1.945 0.0552 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://eurobot_stone</uri>
+      <name>stone_q7_2</name>
+      <pose>1.75 1.945 0.1657 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://eurobot_stone</uri>
+      <name>stone_q7_3</name>
+      <pose>1.75 1.945 0.2762 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://eurobot_stone</uri>
+      <name>stone_q8_1</name>
+      <pose>2.25 1.945 0.0552 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://eurobot_stone</uri>
+      <name>stone_q8_2</name>
+      <pose>2.25 1.945 0.1657 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://eurobot_stone</uri>
+      <name>stone_q8_3</name>
+      <pose>2.25 1.945 0.2762 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://eurobot_stone</uri>
+      <name>stone_q9_1</name>
+      <pose>1.5 0.5 0.0552 0 0 1.570796</pose>
+    </include>
+    <include>
+      <uri>model://eurobot_stone</uri>
+      <name>stone_q9_2</name>
+      <pose>1.5 0.5 0.1657 0 0 1.570796</pose>
+    </include>
+    <include>
+      <uri>model://eurobot_stone</uri>
+      <name>stone_q9_3</name>
+      <pose>1.5 0.5 0.2762 0 0 1.570796</pose>
+    </include>
+    <include>
+      <uri>model://eurobot_stone</uri>
+      <name>stone_q10_1</name>
+      <pose>1.5 1.5 0.0552 0 0 1.570796</pose>
+    </include>
+    <include>
+      <uri>model://eurobot_stone</uri>
+      <name>stone_q10_2</name>
+      <pose>1.5 1.5 0.1657 0 0 1.570796</pose>
+    </include>
+    <include>
+      <uri>model://eurobot_stone</uri>
+      <name>stone_q10_3</name>
+      <pose>1.5 1.5 0.2762 0 0 1.570796</pose>
+    </include>
+
+    <light name="sun" type="directional">
+      <pose>1.5 1 5 0 0 0</pose>
+      <cast_shadows>true</cast_shadows>
+      <intensity>1</intensity>
+      <direction>-0.3 0.2 -1</direction>
+      <diffuse>0.9 0.9 0.9 1</diffuse>
+      <specular>0.2 0.2 0.2 1</specular>
+    </light>
+
+  </world>
+</sdf>
