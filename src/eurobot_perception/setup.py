@@ -25,7 +25,9 @@ setup(
             'crate_perception = eurobot_perception.crate_perception:main',
             'pantry_detection = eurobot_perception.pantry_detection:main',
             'crate_perception_V2 = eurobot_perception.crate_perception_V2:main',
-            'aruco_crate_perception = eurobot_perception.aruco_crate_perception:main',    
+            'aruco_crate_perception = eurobot_perception.aruco_crate_perception:main',
+            'stone_perception = eurobot_perception.stone_perception:main',
+            'stone_accuracy = eurobot_perception.stone_accuracy:main',
         ],
     },
 )

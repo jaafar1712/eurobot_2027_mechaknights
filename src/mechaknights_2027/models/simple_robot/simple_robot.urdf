@@ -22,10 +22,13 @@
     </collision>
   </link>
 
+  <!-- base_footprint is the robot's centre on the table (z = 0); odometry moves it.
+       base_link sits 40 mm above it in the simulation (wheel axle height). -->
   <link name="base_footprint"/>
   <joint name="base_to_footprint" type="fixed">
-    <parent link="base_link"/>
-    <child link="base_footprint"/>
+    <parent link="base_footprint"/>
+    <child link="base_link"/>
+    <origin xyz="0 0 0.040" rpy="0 0 0"/>
   </joint>
 
   <!-- ====================== WHEELS ====================== -->

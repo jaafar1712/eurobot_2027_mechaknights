@@ -15,7 +15,6 @@ def generate_launch_description():
 
     pkg_share = get_package_share_directory('mechaknights_2027')
     eurobot_nav_dir = get_package_share_directory('eurobot_navigation')
-    eurobot_perception_dir = get_package_share_directory('eurobot_perception')
     nav2_bringup_dir = get_package_share_directory('nav2_bringup')
 
     models_path = os.path.join(pkg_share, 'models')
@@ -112,19 +111,21 @@ def generate_launch_description():
         condition=IfCondition(LaunchConfiguration('teleop'))
     )
 
-    # ArUco crate perception (t=5s, after camera bridge is up)
-    aruco_perception = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            os.path.join(eurobot_perception_dir, 'launch', 'aruco_crate_perception.launch.py')
-        )
+    # Stone perception: ArUco ID 13 -> stone positions on the table (t=5s, after camera bridge is up)
+    stone_perception = Node(
+        package='eurobot_perception',
+        executable='stone_perception',
+        name='stone_perception',
+        parameters=[{'use_sim_time': True}],
+        output='screen'
     )
 
-    # Camera debug view showing ArUco detections (t=6s, after perception node is up)
+    # Camera preview with the detected stones drawn on it (t=6s, after perception node is up)
     image_view = Node(
         package='image_view',
         executable='image_view',
-        name='aruco_debug_view',
-        remappings=[('image', '/crate/debug')],
+        name='stone_debug_view',
+        remappings=[('image', '/stones/debug')],
         output='screen'
     )
 
@@ -158,9 +159,9 @@ def generate_launch_description():
         # t=13s: Teleop
         TimerAction(period=13.0, actions=[teleop]),
 
-        # t=5s: ArUco perception
-        TimerAction(period=5.0, actions=[aruco_perception]),
+        # t=5s: Stone perception
+        TimerAction(period=5.0, actions=[stone_perception]),
 
-        # t=6s: Debug image view (/crate/debug)
+        # t=6s: Camera preview with detections (/stones/debug)
         TimerAction(period=6.0, actions=[image_view]),
     ])

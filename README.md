@@ -33,9 +33,10 @@ This repository started from the team's Eurobot 2026 robot, whose game was colle
 | Robot model: differential drive, lidar, camera, 2-finger gripper | ✅ Works. The gripper was sized for the 2026 crates |
 | ROS ↔ Gazebo bridges, odometry, `cmd_vel` | ✅ Works |
 | SLAM (slam_toolbox) and Nav2 | ✅ Works. The lidar sees the table borders, see [Simulation world](#simulation-world) |
-| ArUco perception | ⚠️ Still looks for 2026 crate markers (36/47). Stones use marker **13** |
+| Stone perception (ArUco 13) | ✅ Works. Camera error is 1–2 mm at 0.6 m and about 10 mm at 1.4 m. It reports stack level and top height (see [Checking accuracy](#checking-accuracy)) |
+| Localisation after driving | ⚠️ 4–8 cm and up to 7° off after a few moves. This is now the main error source |
 | Task manager (match strategy) | ⚠️ Still runs the 2026 crate mission |
-| `eurobot_interfaces` messages | ⚠️ Still named `Crate…` / `Pantry…` |
+| `eurobot_interfaces` messages | ✅ `StoneDetection(Array)` added. The 2026 `Crate…` / `Pantry…` ones are still there for the old task manager |
 
 The "Crate", "pantry" and "nest" names in the code come from the 2026 game. They will be renamed as each part is adapted.
 
@@ -70,7 +71,9 @@ The "Crate", "pantry" and "nest" names in the code come from the 2026 game. They
 | `/gripper/command` | `String` | `open` / `close` |
 | `/gripper/state` | `String` | Current gripper state |
 | `/gripper/left/contact`, `/gripper/right/contact` | `Contacts` | Finger contact sensors |
-| `/crate/detections` | `CrateDetectionArray` | ArUco detections (2026 naming) |
+| `/stones/detections` | `StoneDetectionArray` | Stones seen by the camera, in the `table` frame |
+| `/stones/debug` | `Image` | Camera image with the detections drawn on it |
+| `/stones/markers` | `MarkerArray` | Detected stones for RViz |
 | `/task_manager/state` | `String` | Current mission state |
 
 ---
@@ -105,14 +108,15 @@ SLAM, path planning and the mission logic.
 ### `eurobot_perception`
 Camera-based detection.
 
-- `aruco_crate_perception.py`: ArUco detection (`DICT_4X4_50`) with temporal filtering and outlier rejection. Still configured for the 2026 markers.
-- `pantry_detection.py`: 2026 drop-zone detection.
+- `stone_perception.py`: finds stones from their ArUco marker (ID 13, 80 mm). For each stone it reports the centre position (x, y, z) in the `table` frame, its yaw, its stack level, its top-face height (`top_z`, for a gripper coming from above), whether it is the top of its stack, and its distance and bearing from the robot. The camera mounting comes from TF (the URDF), not from parameters.
+- `stone_accuracy.py`: simulation-only check that compares the detections with Gazebo's ground truth (see [Checking accuracy](#checking-accuracy)).
+- `aruco_crate_perception.py`, `pantry_detection.py`: 2026 crate and drop-zone detection, kept for reference.
 
 ### `eurobot_manipulation`
 - `gripper_controller.py`: 20 Hz gripper state machine (`initializing → idle → opening → closing → gripping`). It stops closing when both finger contact sensors touch something.
 
 ### `eurobot_interfaces`
-Custom ROS 2 messages: `CrateDetection(Array)` and `PantryDetection(Array)`.
+Custom ROS 2 messages: `StoneDetection(Array)` for 2027, plus the 2026 `CrateDetection(Array)` and `PantryDetection(Array)`.
 
 ---
 
@@ -208,8 +212,8 @@ Don't type table coordinates anywhere else. Add them to `field.py`, and `field_m
 | Time | Component |
 |------|-----------|
 | t=0s | Gazebo, robot_state_publisher, RViz, ROS ↔ Gazebo bridges |
-| t=5s | Scan frame fixer, ArUco perception |
-| t=6s | ArUco debug image view |
+| t=5s | Scan frame fixer, stone perception |
+| t=6s | Camera preview with the detected stones (`/stones/debug`) |
 | t=7s | SLAM (slam_toolbox) |
 | t=10s | Nav2 |
 | t=13s | Keyboard teleop (opens in an xterm window) |
@@ -229,6 +233,24 @@ ign gazebo -s -r $(ros2 pkg prefix mechaknights_2027)/share/mechaknights_2027/wo
 ```
 
 The launch files force software rendering (`LIBGL_ALWAYS_SOFTWARE=1`) because Gazebo's renderer crashes on some WSL GPU drivers. If you run `ign gazebo` by hand on WSL and it crashes with an `Ogre::UnimplementedException`, export the same variable first.
+
+### Checking accuracy
+
+In simulation, Gazebo knows exactly where every stone and the robot are, so positions can be measured instead of judged by eye. With the simulation running:
+
+```bash
+ros2 run eurobot_perception stone_accuracy --ros-args -p use_sim_time:=true
+```
+
+Every few seconds it prints each visible stone with three errors:
+
+- **camera**: stone position relative to the robot, measured vs true. This is the perception error.
+- **total**: stone position on the table, reported vs true. This is what the strategy actually uses: camera error plus localisation error.
+- **height**: stone centre height (z), reported vs true. Check this when grabbing from above.
+
+It also prints the robot's **localisation error** (estimated vs true pose), plus running mean and max values. When the total error is large, these numbers show whether to work on perception or on localisation.
+
+On the real table there is no ground truth. Instead, place stones at known positions (measured with a tape from the table corner, or the quarry marks on the mat) and compare them with `/stones/detections`.
 
 ---
 

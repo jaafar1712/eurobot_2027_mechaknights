@@ -580,7 +580,7 @@
       <odom_topic>odom</odom_topic>
       <tf_topic>/tf</tf_topic>
       <frame_id>odom</frame_id>
-      <child_frame_id>base_link</child_frame_id>
+      <child_frame_id>base_footprint</child_frame_id>
       <max_linear_acceleration>2.0</max_linear_acceleration>
       <max_angular_acceleration>3.0</max_angular_acceleration>
       <max_linear_velocity>1.0</max_linear_velocity>

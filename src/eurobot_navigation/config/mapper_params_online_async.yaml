@@ -12,7 +12,7 @@ slam_toolbox:
     # ROS Parameters
     odom_frame: odom
     map_frame: map
-    base_frame: base_link
+    base_frame: base_footprint   # on the floor: SLAM is 2D and assumes z = 0 for this frame
     scan_topic: /scan_fixed
     use_map_saver: true
     mode: mapping #mapping | localization
